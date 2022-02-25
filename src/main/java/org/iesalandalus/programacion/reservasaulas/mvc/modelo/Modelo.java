@@ -1,5 +1,7 @@
 package org.iesalandalus.programacion.reservasaulas.mvc.modelo;
 
+import java.util.List;
+
 import javax.naming.OperationNotSupportedException;
 
 import org.iesalandalus.programacion.reservasaulas.mvc.modelo.dominio.Aula;
@@ -12,26 +14,25 @@ import org.iesalandalus.programacion.reservasaulas.mvc.modelo.negocio.Reservas;
 
 public class Modelo {
 
-	private static final int CAPACIDAD = 50;
 	Profesores profesores;
 	Aulas aulas;
 	Reservas reservas;
 
 	public Modelo() {
-		profesores = new Profesores(CAPACIDAD);
-		aulas = new Aulas(CAPACIDAD);
-		reservas = new Reservas(CAPACIDAD);
+		profesores = new Profesores();
+		aulas = new Aulas();
+		reservas = new Reservas();
 	};
 
-	public Aula[] getAulas() {
-		return aulas.get();
+	public List<Aula> getAulas() {
+		return aulas.getAulas();
 	}
 
 	public int getNumAulas() {
-		return aulas.getTamano();
+		return aulas.getNumAulas();
 	}
 
-	public String[] representaAulas() {
+	public List<String> representaAulas() {
 		return aulas.representar();
 	}
 
@@ -47,15 +48,15 @@ public class Modelo {
 		aulas.borrar(aula);
 	}
 
-	public Profesor[] getProfesores() {
-		return profesores.get();
+	public List<Profesor> getProfesores() {
+		return profesores.getProfesores();
 	}
 
 	public int getNumProfesores() {
-		return profesores.getTamano();
+		return profesores.getNumProfesores();
 	}
 
-	public String[] representaProfesores() {
+	public List<String> representaProfesores() {
 		return profesores.representar();
 	}
 
@@ -71,15 +72,15 @@ public class Modelo {
 		profesores.borrar(profesor);
 	}
 
-	public Reserva[] getReservas() {
-		return reservas.get();
+	public List<Reserva> getReservas() {
+		return reservas.getReservas();
 	}
 
 	public int getNumReservas() {
-		return reservas.getTamano();
+		return reservas.getNumReservas();
 	}
 
-	public String[] representaReservas() {
+	public List<String> representaReservas() {
 		return reservas.representar();
 	}
 
@@ -95,15 +96,15 @@ public class Modelo {
 		reservas.borrar(Reserva);
 	}
 
-	public Reserva[] getReservasAula(Aula aula) {
+	public List<Reserva> getReservasAula(Aula aula) {
 		return reservas.getReservasAula(aula);
 	}
 
-	public Reserva[] getReservaProfesor(Profesor profesor) {
+	public List<Reserva> getReservaProfesor(Profesor profesor) {
 		return reservas.getReservasProfesor(profesor);
 	}
 
-	public Reserva[] getReservaPermanencia(Permanencia permanencia) {
+	public List<Reserva> getReservaPermanencia(Permanencia permanencia) {
 		return reservas.getReservasPermanencia(permanencia);
 	}
 

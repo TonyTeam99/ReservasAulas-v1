@@ -61,18 +61,6 @@ public class Reservas {
 
 	}
 
-//	private boolean esMesSiguienteOPosterior(Reserva reserva) {
-//		return false;
-//	}
-//	
-//	private List<Reserva> getReservasProfesorMes(Profesor profesor,LocalDate localdate){
-//		return coleccionReservas;
-//	}
-//	
-//	private Reserva getReservasAulaDia(Aula aula, LocalDate localdate) {
-//		return null;	
-//	}
-
 	public Reserva buscar(Reserva reserva) {
 		int indice = coleccionReservas.indexOf(reserva);
 		if (reserva == null) {
