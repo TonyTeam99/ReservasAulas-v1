@@ -1,5 +1,7 @@
 package org.iesalandalus.programacion.reservasaulas.mvc.vista;
 
+import java.util.List;
+
 import javax.naming.OperationNotSupportedException;
 
 import org.iesalandalus.programacion.reservasaulas.mvc.controlador.Controlador;
@@ -11,8 +13,8 @@ import org.iesalandalus.programacion.reservasaulas.mvc.modelo.dominio.Reserva;
 public class Vista {
 
 	private static final String ERROR = "ERROR";
-	private static final String NOMBRE_VALIDO = "NOMBRE_VALIDO";
-	private static final String CORREO_VALIDO = "CORREO_VALIDO";
+//	private static final String NOMBRE_VALIDO = "NOMBRE_VALIDO";
+//	private static final String CORREO_VALIDO = "CORREO_VALIDO";
 	private Controlador controlador;
 
 	public Vista() {
@@ -45,7 +47,7 @@ public class Vista {
 		try {
 			Aula aula = Consola.leerAula();
 			controlador.insertarAula(aula);
-			System.out.println("Aula insertada correctamente" + NOMBRE_VALIDO);
+			System.out.println("Aula insertada correctamente.");
 		} catch (OperationNotSupportedException | IllegalArgumentException e) {
 			System.out.println(ERROR + e.getMessage());
 		}
@@ -96,7 +98,7 @@ public class Vista {
 		try {
 			Profesor profesor = Consola.leerProfesor();
 			controlador.insertarProfesor(profesor);
-			System.out.println("Profesor insertado correctamente" + NOMBRE_VALIDO);
+			System.out.println("Profesor insertado correctamente.");
 		} catch (OperationNotSupportedException | IllegalArgumentException e) {
 			System.out.println(ERROR + e.getMessage());
 		}
@@ -178,45 +180,6 @@ public class Vista {
 		}
 	}
 
-	public void listarReservasProfesor() {
-		Consola.mostrarCabecera("Listar Reservas Profesor");
-		Profesor profesor = Consola.leerProfesor();
-		Reserva[] reservasProfesor = controlador.getReservasProfesor(profesor);
-		if (reservasProfesor.length != 0) {
-			for (Reserva reservaProfesor : reservasProfesor) {
-				System.out.println(reservaProfesor);
-			}
-		} else {
-			System.out.println(profesor.getNombre() + " no tiene ninguna reserva a su nombre.");
-		}
-	}
-
-	public void listarReservasPermanencia() {
-		Consola.mostrarCabecera("Listar Reservas Permanencia");
-		Permanencia permanencia = new Permanencia(Consola.leerDia(), Consola.leerTramo());
-		Reserva[] reservasPermanencia = controlador.getReservasPermanencia(permanencia);
-		if (reservasPermanencia.length != 0) {
-			for (Reserva reservaPermanencia : reservasPermanencia) {
-				System.out.println(reservaPermanencia);
-			}
-		} else {
-			System.out.println(permanencia.getDia() + ": no hay ninguna reserva.");
-		}
-
-	}
-
-	public void consultarDisponibilidad() {
-		Consola.mostrarCabecera("Consultar Disponibilidad");
-		Aula aula = Consola.leerAula();
-		Permanencia permanencia = new Permanencia(Consola.leerDia(), Consola.leerTramo());
-		if (controlador.consultarDisponibilidad(aula, permanencia)) {
-			System.out.println(aula + " se encuentra disponible el dia " + permanencia.getDia() + ".");
-		} else {
-			System.out.println(aula + " no se encuentra disponible el dia " + permanencia.getDia() + ".");
-		}
-
-	}
-
 	private Reserva leerReserva(Profesor profesor) {
 		Consola.mostrarCabecera("Leer Reserva");
 		Aula aula = Consola.leerAula();
@@ -237,4 +200,43 @@ public class Vista {
 			System.out.println(aula.getNombre() + " no tiene ninguna reserva a su nombre.");
 		}
 	}
+	public void listarReservasProfesor() {
+		Consola.mostrarCabecera("Listar Reservas Profesor");
+		Profesor profesor = Consola.leerProfesor();
+		List<Reserva> reservasProfesor = controlador.getReservasProfesor(profesor);
+		if (reservasProfesor.size() != 0) {
+			for (Reserva reservaProfesor : reservasProfesor) {
+				System.out.println(reservaProfesor);
+			}
+		} else {
+			System.out.println(profesor.getNombre()+" no tiene ninguna reserva a su nombre.");
+		}
+	}
+
+	public void listarReservasPermanencia() {
+		Consola.mostrarCabecera("Listar Reservas Permanencia");
+		Permanencia permanencia = new Permanencia(Consola.leerDia(), Consola.leerTramo());
+		List<Reserva> reservasPermanencia = controlador.getReservasPermanencia(permanencia);
+		if (reservasPermanencia.size() != 0) {
+			for (Reserva reservaPermanencia : reservasPermanencia) {
+				System.out.println(reservaPermanencia);
+			}
+		} else {
+			System.out.println(permanencia.getDia()+": no hay ninguna reserva.");
+		}
+	}
+
+	public void consultarDisponibilidad() {
+		Consola.mostrarCabecera("Consultar Disponibilidad");
+		Aula aula = Consola.leerAula();
+		Permanencia permanencia = new Permanencia(Consola.leerDia(), Consola.leerTramo());
+		if(controlador.consultarDisponibilidad(aula,permanencia)) {
+			System.out.println(aula + " se encuentra disponible el dia "+permanencia.getDia()+".");
+		}else {
+			System.out.println(aula + " no se encuentra disponible el dia "+permanencia.getDia()+".");
+		}
+		
+	}
+	
+}
 }
