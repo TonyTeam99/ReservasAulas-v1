@@ -67,6 +67,20 @@ public class Profesor {
 
 	}
 
+	private String formateaNombre(String nombre) {
+		nombre = nombre.replaceAll("\\s+", " ").trim().toLowerCase();
+		String nuevonombre = "";
+		nuevonombre += nombre.substring(0, 1).toUpperCase();
+		for (int i = 1; i < nombre.length(); i++) {
+			if (nombre.charAt(i - 1) == ' ') {
+				nuevonombre += nombre.substring(i, i + 1).toUpperCase();
+			} else {
+				nuevonombre += nombre.substring(i, i + 1);
+			}
+		}
+		return nuevonombre;
+	}
+
 	public void setTelefono(String telefono) {
 		if (!telefono.matches(ER_TELEFONO)) {
 			throw new IllegalArgumentException("ERROR: El teléfono del profesor no es válido.");

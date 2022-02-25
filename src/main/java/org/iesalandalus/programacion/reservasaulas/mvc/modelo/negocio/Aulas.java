@@ -1,118 +1,92 @@
 package org.iesalandalus.programacion.reservasaulas.mvc.modelo.negocio;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import javax.naming.OperationNotSupportedException;
 
 import org.iesalandalus.programacion.reservasaulas.mvc.modelo.dominio.Aula;
 
 public class Aulas {
 
-	private int capacidad;
-	private int tamano;
-	Aula coleccionAulas[];
+	private List<Aula> coleccionAulas;
 
-	public Aulas(int aulas) {
-		if (aulas <= 0) {
-			throw new IllegalArgumentException("ERROR: La capacidad debe ser mayor que cero.");
+	public Aulas() {
+		this.coleccionAulas = new ArrayList<>();
+	}
+
+	public Aulas(Aulas aulas) {
+		setAulas(aulas);
+	}
+
+	private void setAulas(Aulas aulas) {
+		if (aulas == null) {
+			throw new NullPointerException("ERROR: No se pueden copiar aulas nulas.");
+		} else {
+			coleccionAulas = copiaProfundaAulas(aulas.coleccionAulas);
 		}
-		capacidad = aulas;
-		tamano = 0;
-		this.coleccionAulas = new Aula[aulas];
 	}
 
-	public Aula[] get() {
-		return copiaProfundaAulas();
-
+	public List<Aula> getAulas() {
+		return copiaProfundaAulas(coleccionAulas);
 	}
 
-	private Aula[] copiaProfundaAulas() {
-		Aula[] copia = new Aula[capacidad];
-		for (int i = 0; i < tamano; i++) {
-			copia[i] = coleccionAulas[i];
+	public int getNumAulas() {
+		return coleccionAulas.size();
+	}
+
+	private List<Aula> copiaProfundaAulas(List<Aula> aulas) {
+		List<Aula> copiaAulas = new ArrayList<>();
+		Iterator<Aula> listIterator = aulas.listIterator();
+		while (listIterator.hasNext()) {
+			copiaAulas.add(new Aula(listIterator.next()));
 		}
-		return copia;
-	}
-
-	public int getTamano() {
-		return tamano;
-	}
-
-	public int getCapacidad() {
-		return capacidad;
+		return copiaAulas;
 	}
 
 	public void insertar(Aula aula) throws OperationNotSupportedException {
 		if (aula == null) {
 			throw new NullPointerException("ERROR: No se puede insertar un aula nula.");
-		}
-		int indice = buscarIndice(aula);
-		if (capacidadSuperada(indice)) {
-			throw new OperationNotSupportedException("ERROR: No se aceptan más aulas.");
-		}
-		if (tamanoSuperado(indice)) {
-			coleccionAulas[indice] = new Aula(aula);
-			tamano++;
 		} else {
-			throw new OperationNotSupportedException("ERROR: Ya existe un aula con ese nombre.");
-		}
-	}
-
-	private int buscarIndice(Aula aula) {
-		int indice = 0;
-		boolean aulaEncontrada = false;
-		while (!tamanoSuperado(indice) && !aulaEncontrada) {
-			if (coleccionAulas[indice].equals(aula)) {
-				aulaEncontrada = true;
+			if (coleccionAulas.contains(aula)) {
+				throw new OperationNotSupportedException("ERROR: Ya existe un aula con ese nombre.");
 			} else {
-				indice++;
+				coleccionAulas.add(new Aula(aula));
 			}
 		}
-		return indice;
-	}
-
-	private boolean tamanoSuperado(int indice) {
-		return (indice >= tamano);
-	}
-
-	private boolean capacidadSuperada(int indice) {
-		return (indice >= capacidad);
 	}
 
 	public Aula buscar(Aula aula) {
+		int indice = coleccionAulas.indexOf(aula);
 		if (aula == null) {
 			throw new NullPointerException("ERROR: No se puede buscar un aula nula.");
-		}
-		int indice = buscarIndice(aula);
-		if (tamanoSuperado(indice)) {
-			return null;
 		} else {
-			return new Aula(coleccionAulas[indice]);
+			if (indice == -1) {
+				return null;
+			} else {
+				return new Aula(coleccionAulas.get(indice));
+			}
 		}
 	}
 
 	public void borrar(Aula aula) throws OperationNotSupportedException {
 		if (aula == null) {
 			throw new NullPointerException("ERROR: No se puede borrar un aula nula.");
-		}
-		int indice = buscarIndice(aula);
-		if (!tamanoSuperado(indice)) {
-			desplazarUnaPosicionHaciaIzquierda(indice);
 		} else {
-			throw new OperationNotSupportedException("ERROR: No existe ningún aula con ese nombre.");
+			if (!coleccionAulas.remove(aula)) {
+				throw new OperationNotSupportedException("ERROR: No existe ningún aula con ese nombre.");
+			}
 		}
 	}
 
-	private void desplazarUnaPosicionHaciaIzquierda(int posicion) {
-		for (int i = posicion; !tamanoSuperado(i); i++) {
-			coleccionAulas[i] = coleccionAulas[i + 1];
+	public List<String> representar() {
+		List<String> representaAulas = new ArrayList<>();
+		Iterator<Aula> listIterator = coleccionAulas.listIterator();
+		while (listIterator.hasNext()) {
+			representaAulas.add(listIterator.next().toString());
 		}
-		tamano--;
+		return representaAulas;
 	}
 
-	public String[] representar() {
-		String[] representa = new String[tamano];
-		for (int i = 0; i < tamano; i++) {
-			representa[i] = coleccionAulas[i].toString();
-		}
-		return representa;
-	}
 }
