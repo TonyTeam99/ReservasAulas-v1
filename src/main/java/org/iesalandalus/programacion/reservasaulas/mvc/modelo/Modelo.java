@@ -14,9 +14,9 @@ import org.iesalandalus.programacion.reservasaulas.mvc.modelo.negocio.Reservas;
 
 public class Modelo {
 
-	Profesores profesores;
-	Aulas aulas;
-	Reservas reservas;
+	private Profesores profesores;
+	private Aulas aulas;
+	private Reservas reservas;
 
 	public Modelo() {
 		profesores = new Profesores();
@@ -30,14 +30,17 @@ public class Modelo {
 
 	public int getNumAulas() {
 		return aulas.getNumAulas();
+
 	}
 
 	public List<String> representaAulas() {
 		return aulas.representar();
+
 	}
 
 	public Aula buscarAula(Aula aula) {
 		return aulas.buscar(aula);
+
 	}
 
 	public void insertarAula(Aula aula) throws OperationNotSupportedException {
@@ -50,18 +53,22 @@ public class Modelo {
 
 	public List<Profesor> getProfesores() {
 		return profesores.getProfesores();
+
 	}
 
 	public int getNumProfesores() {
 		return profesores.getNumProfesores();
+
 	}
 
 	public List<String> representaProfesores() {
 		return profesores.representar();
+
 	}
 
 	public Profesor buscarProfesor(Profesor profesor) {
 		return profesores.buscar(profesor);
+
 	}
 
 	public void insertarProfesor(Profesor profesor) throws OperationNotSupportedException {
@@ -74,18 +81,22 @@ public class Modelo {
 
 	public List<Reserva> getReservas() {
 		return reservas.getReservas();
+
 	}
 
 	public int getNumReservas() {
 		return reservas.getNumReservas();
+
 	}
 
 	public List<String> representaReservas() {
 		return reservas.representar();
+
 	}
 
 	public Reserva buscarReserva(Reserva Reserva) {
 		return reservas.buscar(Reserva);
+
 	}
 
 	public void realizarReserva(Reserva Reserva) throws OperationNotSupportedException {
