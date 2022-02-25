@@ -1,5 +1,9 @@
 package org.iesalandalus.programacion.reservasaulas.mvc.modelo.negocio;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import javax.naming.OperationNotSupportedException;
 
 import org.iesalandalus.programacion.reservasaulas.mvc.modelo.dominio.Aula;
@@ -9,170 +13,131 @@ import org.iesalandalus.programacion.reservasaulas.mvc.modelo.dominio.Reserva;
 
 public class Reservas {
 
-	private int capacidad;
-	private int tamano;
-	Reserva[] coleccionReservas;
+	private List<Reserva> coleccionReservas;
 
-	public Reservas(int reservas) {
-		if (reservas <= 0) {
-			throw new IllegalArgumentException("ERROR: La capacidad debe ser mayor que cero.");
+	public Reservas() {
+		coleccionReservas = new ArrayList<>();
+	}
+
+	public Reservas(Reservas reservas) {
+		setReservas(reservas);
+	}
+
+	private void setReservas(Reservas reservas) {
+		if (reservas == null) {
+			throw new NullPointerException("ERROR: No se pueden copiar reservas nulas.");
+		} else {
+			coleccionReservas = copiaProfundaReservas(reservas.coleccionReservas);
 		}
-		capacidad = reservas;
-		tamano = 0;
-		coleccionReservas = new Reserva[reservas];
-
 	}
 
-	public Reserva[] get() {
-		return copiaProfundaReservas();
-	}
-
-	private Reserva[] copiaProfundaReservas() {
-		Reserva[] copia = new Reserva[capacidad];
-		for (int i = 0; i < tamano; i++) {
-			copia[i] = new Reserva(coleccionReservas[i]);
+	private List<Reserva> copiaProfundaReservas(List<Reserva> reservas) {
+		List<Reserva> copiaReserva = new ArrayList<>();
+		Iterator<Reserva> listIterator = reservas.listIterator();
+		while (listIterator.hasNext()) {
+			copiaReserva.add(new Reserva(listIterator.next()));
 		}
-		return copia;
+		return copiaReserva;
 	}
 
-	public int getCapacidad() {
-		return capacidad;
+	public List<Reserva> getReservas() {
+		return copiaProfundaReservas(coleccionReservas);
 	}
 
-	public int getTamano() {
-		return tamano;
+	public int getNumReservas() {
+		return coleccionReservas.size();
 	}
 
 	public void insertar(Reserva reserva) throws OperationNotSupportedException {
 		if (reserva == null) {
-			throw new NullPointerException("ERROR: No se puede insertar una reserva nula.");
-		}
-		int indice = buscarIndice(reserva);
-		if (capacidadSuperada(indice)) {
-			throw new OperationNotSupportedException("ERROR: No se aceptan más reservas.");
-		}
-		if (tamanoSuperado(indice)) {
-			coleccionReservas[indice] = new Reserva(reserva);
-			tamano++;
+			throw new NullPointerException("ERROR: No se puede realizar una reserva nula.");
 		} else {
-			throw new OperationNotSupportedException("ERROR: Ya existe una reserva con ese nombre.");
-		}
-
-	}
-
-	private int buscarIndice(Reserva reserva) {
-		int indice = 0;
-		boolean reservaEncontrada = false;
-		while (!tamanoSuperado(indice) && !reservaEncontrada) {
-			if (coleccionReservas[indice].equals(reserva)) {
-				reservaEncontrada = true;
+			if (coleccionReservas.contains(reserva)) {
+				throw new OperationNotSupportedException("ERROR: La reserva ya existe.");
 			} else {
-				indice++;
+				coleccionReservas.add(new Reserva(reserva));
 			}
 		}
-		return indice;
+
 	}
 
-	private boolean tamanoSuperado(int indice) {
-
-		return (indice >= tamano);
-	}
-
-	private boolean capacidadSuperada(int indice) {
-
-		return (indice >= capacidad);
-	}
+//	private boolean esMesSiguienteOPosterior(Reserva reserva) {
+//		return false;
+//	}
+//	
+//	private List<Reserva> getReservasProfesorMes(Profesor profesor,LocalDate localdate){
+//		return coleccionReservas;
+//	}
+//	
+//	private Reserva getReservasAulaDia(Aula aula, LocalDate localdate) {
+//		return null;	
+//	}
 
 	public Reserva buscar(Reserva reserva) {
+		int indice = coleccionReservas.indexOf(reserva);
 		if (reserva == null) {
-			throw new NullPointerException("ERROR: No se puede buscar una reserva nula.");
-		}
-		int indice = buscarIndice(reserva);
-		if (tamanoSuperado(indice)) {
-			return null;
+			throw new NullPointerException("ERROR: No se puede buscar un reserva nula.");
 		} else {
-			return new Reserva(reserva);
+			if (indice == -1) {
+				return null;
+			} else {
+				return new Reserva(coleccionReservas.get(indice));
+			}
 		}
+
 	}
 
 	public void borrar(Reserva reserva) throws OperationNotSupportedException {
 		if (reserva == null) {
-			throw new NullPointerException("ERROR: No se puede borrar una reserva nula.");
-		}
-		int indice = buscarIndice(reserva);
-		if (!tamanoSuperado(indice)) {
-			desplazarUnaPosicionHaciaIzquierda(indice);
+			throw new NullPointerException("ERROR: No se puede anular una reserva nula.");
 		} else {
-			throw new OperationNotSupportedException("ERROR: No existe ninguna reserva con ese nombre.");
-		}
-
-	}
-
-	private void desplazarUnaPosicionHaciaIzquierda(int posicion) {
-		for (int i = posicion; !tamanoSuperado(i); i++) {
-			coleccionReservas[i] = coleccionReservas[i + 1];
-		}
-		tamano--;
-	}
-
-	public String[] representar() {
-		String[] representa = new String[tamano];
-		for (int i = 0; i < tamano; i++) {
-			representa[i] = coleccionReservas[i].toString();
-		}
-		return representa;
-	}
-
-	public Reserva[] getReservasProfesor(Profesor reservasProfesor) {
-		if (reservasProfesor == null) {
-			throw new NullPointerException("ERROR: El profesor no puede ser nulo.");
-		}
-
-		Reserva[] reservas = new Reserva[capacidad];
-
-		int indiceReservas = 0;
-		for (int i = 0; i < tamano; i++) {
-			if (coleccionReservas[i].getProfesor().equals(reservasProfesor)) {
-				reservas[indiceReservas] = coleccionReservas[i];
-				indiceReservas++;
+			if (!coleccionReservas.remove(reserva)) {
+				throw new OperationNotSupportedException("ERROR: La reserva a anular no existe.");
 			}
 		}
-		return reservas;
 	}
 
-	public Reserva[] getReservasAula(Aula reservasAula) {
-		if (reservasAula == null) {
-			throw new NullPointerException("ERROR: El aula no puede ser nula.");
+	public List<String> representar() {
+		List<String> representaReservas = new ArrayList<>();
+		Iterator<Reserva> listIterator = coleccionReservas.listIterator();
+		while (listIterator.hasNext()) {
+			representaReservas.add(listIterator.next().toString());
 		}
-
-		Reserva[] reservas = new Reserva[capacidad];
-
-		int indiceReservas = 0;
-		for (int i = 0; i < tamano; i++) {
-			if (coleccionReservas[i].getAula().equals(reservasAula)) {
-				reservas[indiceReservas] = coleccionReservas[i];
-				indiceReservas++;
-			}
-		}
-		return reservas;
+		return representaReservas;
 	}
 
-	public Reserva[] getReservasPermanencia(Permanencia reservasPermanencia) {
-		if (reservasPermanencia == null) {
-			throw new NullPointerException("ERROR: La permanencia no puede ser nula.");
-		}
-
-		Reserva[] reservas = new Reserva[capacidad];
-
-		int indiceReservas = 0;
-		for (int i = 0; i < tamano; i++) {
-			if (coleccionReservas[i].getPermanencia().equals(reservasPermanencia)) {
-				reservas[indiceReservas] = coleccionReservas[i];
-				indiceReservas++;
+	public List<Reserva> getReservasProfesor(Profesor profesor) {
+		List<Reserva> reservaProfesor = copiaProfundaReservas(coleccionReservas);
+		Iterator<Reserva> listIterator = reservaProfesor.listIterator();
+		while (listIterator.hasNext()) {
+			if (listIterator.next().getProfesor() != profesor) {
+				listIterator.remove();
+				;
 			}
 		}
+		return reservaProfesor;
+	}
 
-		return reservas;
+	public List<Reserva> getReservasAula(Aula aula) {
+		List<Reserva> reservaAula = copiaProfundaReservas(coleccionReservas);
+		Iterator<Reserva> listIterator = reservaAula.listIterator();
+		while (listIterator.hasNext()) {
+			if (listIterator.next().getAula() != aula) {
+				listIterator.remove();
+			}
+		}
+		return reservaAula;
+	}
+
+	public List<Reserva> getReservasPermanencia(Permanencia permanencia) {
+		List<Reserva> reservaPermanencia = copiaProfundaReservas(coleccionReservas);
+		Iterator<Reserva> listIterator = reservaPermanencia.listIterator();
+		while (listIterator.hasNext()) {
+			if (listIterator.next().getPermanencia() != permanencia) {
+				listIterator.remove();
+			}
+		}
+		return reservaPermanencia;
 	}
 
 	public boolean consultarDisponibilidad(Aula aula, Permanencia permanencia) {
@@ -182,12 +147,12 @@ public class Reservas {
 		if (permanencia == null) {
 			throw new NullPointerException("ERROR: No se puede consultar la disponibilidad de una permanencia nula.");
 		}
-
-		for (int i = 0; i < tamano; i++) {
-			if (coleccionReservas[i].getAula().equals(aula)) {
-				if (coleccionReservas[i].getPermanencia().equals(permanencia)) {
-					return false;
-				}
+		List<Reserva> consultarDisponibilidad = copiaProfundaReservas(coleccionReservas);
+		Iterator<Reserva> listIterator = consultarDisponibilidad.listIterator();
+		while (listIterator.hasNext()) {
+			Reserva myobj = listIterator.next();
+			if (myobj.getAula() == aula && myobj.getPermanencia() == permanencia) {
+				return false;
 			}
 		}
 		return true;
