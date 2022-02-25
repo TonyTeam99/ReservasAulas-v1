@@ -1,120 +1,92 @@
 package org.iesalandalus.programacion.reservasaulas.mvc.modelo.negocio;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import javax.naming.OperationNotSupportedException;
 
 import org.iesalandalus.programacion.reservasaulas.mvc.modelo.dominio.Profesor;
 
 public class Profesores {
 
-	private int capacidad;
-	private int tamano;
-	Profesor[] coleccionProfesores;
+	private List<Profesor> coleccionProfesores;
 
-	public Profesores(int profesores) {
-		if (profesores <= 0) {
-			throw new IllegalArgumentException("ERROR: La capacidad debe ser mayor que cero.");
+	public Profesores() {
+		coleccionProfesores = new ArrayList<>();
+	}
+
+	public Profesores(Profesores profesores) {
+		setProfesores(profesores);
+	}
+
+	private void setProfesores(Profesores profesores) {
+		if (profesores == null) {
+			throw new NullPointerException("ERROR: No se pueden copiar profesores nulos.");
+		} else {
+			coleccionProfesores = copiaProfundaProfesores(profesores.coleccionProfesores);
 		}
-		capacidad = profesores;
-		tamano = 0;
-		coleccionProfesores = new Profesor[profesores];
-
 	}
 
-	public Profesor[] get() {
-		return copiaProfundaProfesores();
-	}
-
-	private Profesor[] copiaProfundaProfesores() {
-		Profesor[] copia = new Profesor[capacidad];
-		for (int i = 0; i < tamano; i++) {
-			copia[i] = new Profesor(coleccionProfesores[i]);
+	private List<Profesor> copiaProfundaProfesores(List<Profesor> profesores) {
+		List<Profesor> copiaProfesor = new ArrayList<>();
+		Iterator<Profesor> listIterator = profesores.listIterator();
+		while (listIterator.hasNext()) {
+			copiaProfesor.add(new Profesor(listIterator.next()));
 		}
-		return copia;
+		return copiaProfesor;
 	}
 
-	public int getCapacidad() {
-		return capacidad;
+	public List<Profesor> getProfesores() {
+		return copiaProfundaProfesores(coleccionProfesores);
 	}
 
-	public int getTamano() {
-		return tamano;
+	public int getNumProfesores() {
+		return coleccionProfesores.size();
 	}
 
 	public void insertar(Profesor profesor) throws OperationNotSupportedException {
 		if (profesor == null) {
 			throw new NullPointerException("ERROR: No se puede insertar un profesor nulo.");
-		}
-		int indice = buscarIndice(profesor);
-		if (capacidadSuperada(indice)) {
-			throw new OperationNotSupportedException("ERROR: No se aceptan más profesores.");
-		}
-		if (tamanoSuperado(indice)) {
-			coleccionProfesores[indice] = new Profesor(profesor);
-			tamano++;
 		} else {
-			throw new OperationNotSupportedException("ERROR: Ya existe un profesor con ese nombre.");
-		}
-	}
-
-	private int buscarIndice(Profesor profesor) {
-		int indice = 0;
-		boolean profesorEncontrado = false;
-		while (!tamanoSuperado(indice) && !profesorEncontrado) {
-			if (coleccionProfesores[indice].equals(profesor)) {
-				profesorEncontrado = true;
+			if (coleccionProfesores.contains(profesor)) {
+				throw new OperationNotSupportedException("ERROR: Ya existe un profesor con ese nombre.");
 			} else {
-				indice++;
+				coleccionProfesores.add(new Profesor(profesor));
 			}
 		}
-		return indice;
-	}
-
-	private boolean tamanoSuperado(int indice) {
-
-		return (indice >= tamano);
-	}
-
-	private boolean capacidadSuperada(int indice) {
-
-		return (indice >= capacidad);
 	}
 
 	public Profesor buscar(Profesor profesor) {
+		int indice = coleccionProfesores.indexOf(profesor);
 		if (profesor == null) {
 			throw new NullPointerException("ERROR: No se puede buscar un profesor nulo.");
-		}
-		int indice = buscarIndice(profesor);
-		if (tamanoSuperado(indice)) {
-			return null;
 		} else {
-			return new Profesor(profesor);
+			if (indice == -1) {
+				return null;
+			} else {
+				return new Profesor(coleccionProfesores.get(indice));
+			}
 		}
+
 	}
 
 	public void borrar(Profesor profesor) throws OperationNotSupportedException {
 		if (profesor == null) {
 			throw new NullPointerException("ERROR: No se puede borrar un profesor nulo.");
-		}
-		int indice = buscarIndice(profesor);
-		if (!tamanoSuperado(indice)) {
-			desplazarUnaPosicionHaciaIzquierda(indice);
 		} else {
-			throw new OperationNotSupportedException("ERROR: No existe ningún profesor con ese nombre.");
+			if (!coleccionProfesores.remove(profesor)) {
+				throw new OperationNotSupportedException("ERROR: No existe ningún profesor con ese nombre.");
+			}
 		}
 	}
 
-	private void desplazarUnaPosicionHaciaIzquierda(int posicion) {
-		for (int i = posicion; !tamanoSuperado(i); i++) {
-			coleccionProfesores[i] = coleccionProfesores[i + 1];
+	public List<String> representar() {
+		List<String> representaProfesores = new ArrayList<>();
+		Iterator<Profesor> listIterator = coleccionProfesores.listIterator();
+		while (listIterator.hasNext()) {
+			representaProfesores.add(listIterator.next().toString());
 		}
-		tamano--;
-	}
-
-	public String[] representar() {
-		String[] representa = new String[tamano];
-		for (int i = 0; i < tamano; i++) {
-			representa[i] = coleccionProfesores[i].toString();
-		}
-		return representa;
+		return representaProfesores;
 	}
 }
